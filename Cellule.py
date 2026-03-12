@@ -177,15 +177,15 @@ class Cellule :
     def clicG (self, event):
         
         global etat_jeu
-        print("etat de jeu", Cellule.etat_jeu_Cel)
+        #print("etat de jeu", Cellule.etat_jeu_Cel)
         
         if Cellule.etat_jeu_Cel != 2:                       # etat_jeu = 2 lorsque c'est perdu
             
             if Cellule.etat_jeu_Cel == 0:  
-                print("on va ùetre les Bombes", Cellule.etat_jeu_Cel)               # le tout premier clic 
+                #print("on va ùetre les Bombes", Cellule.etat_jeu_Cel)               # le tout premier clic 
                 self.determine_bombe()                  # placé les bombes
                 Cellule.etat_jeu_Cel = 1
-                print("on a mis les bombes ", Cellule.etat_jeu_Cel)
+                #print("on a mis les bombes ", Cellule.etat_jeu_Cel)
             
             self.decouvert()
 
@@ -204,3 +204,6 @@ class Cellule :
                     self.set_drapeau(0)
                     drapeaux += 1
                     drapNb.set(drapeaux)
+
+
+# toujours en construction mais au moins ça fonctionne ! 
