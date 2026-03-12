@@ -5,8 +5,8 @@ NbColumn = 40
 
 sizeCel = 20
 
-bombes = 110
-drapeaux = 110
+bombes = 100
+drapeaux = 100
 
 root = Tk()
 root.title("Démineur")

@@ -28,7 +28,7 @@ class Cellule :
 
 
         self.rec = canvas.create_rectangle(coA+1, coB+1, coA+sizeCel+1, coB+sizeCel+1, fill='black', outline="gray") # outline=""
-        # canvas.create_text(self.coA+10, self.coB+10, text=self.id, fill="white")
+        # canvas.create_text(self.coA+10, self.coB+10, text=self.type, fill="white")
         
 
         canvas.tag_bind(self.rec, "<Button-1>", self.clicG)
@@ -117,7 +117,7 @@ class Cellule :
     
 
     def decouvert (self):
-        global etat_jeu
+        global etat_jeu, NbColumn, NbRow, bombes
 
         if self.get_etat() != 1 and self.get_drapeau() == 0:  # si l'état est different de découvert (donc caché ou caché avec indice) et sans drapeau
             # self.etat = 1
@@ -126,6 +126,7 @@ class Cellule :
 
             if self.get_type() == 0: # il n'y a pas de bombe
                 Cellule.versLaVictoire += 1
+                print("vers la victoire", Cellule.versLaVictoire)
                 if self.indice_Bombe() != 0:
                     canvas.create_text(self.coA+10, self.coB+10, text=self.indice_Bombe(), fill="white", tags="LesIndices")
                 # self.aUnIndice = 1
@@ -140,7 +141,7 @@ class Cellule :
                         # cel.config_color()  <- ça fonctionne 
                         cel.decouvert()
 
-                if Cellule.versLaVictoire == 895 : # revoir cette valeur pr ce que je n'ai pas compris
+                if Cellule.versLaVictoire == (NbRow*NbColumn)-bombes : # revoir cette valeur pr ce que je n'ai pas compris
                     print("Vous avez gagné yhouhou !")
                     canvas.create_text(400, 250, text="c'est gagné bg", fill="pink", font=("", 70), tags="LesIndices")
 
@@ -157,21 +158,27 @@ class Cellule :
     
     def determine_bombe (self):
         
-        for i in range (bombes):            # boucle de nombre de bombe
+                  # boucle de nombre de bombe
 
-            newListeCel = []                # liste sans celle qui a été cliqué
-            
-            for cell in Cellule.listeCellules:
-                if cell != self:
-                    newListeCel.append(cell)
+        newListeCel = []                # liste sans celle qui a été cliqué
+        
+        for cell in Cellule.listeCellules:
+            if cell != self:
+                newListeCel.append(cell)
 
+        for i in range (bombes):  
             cel = choice(newListeCel)
 
             cel.set_type(1)       # cellule selectionné pour être une bombe
+            canvas.create_text(cel.coA+10, cel.coB+10, text=cel.get_type(), fill="white", tags="LesIndices")
+            # del newListeCel[cel.get_id]
+            newListeCel.remove(cel)
             # labelType = canvas.create_text(cel.coA+10, cel.coB+10, text=cel.get_type(), fill="white", tags="LesIndices")
         # Cellule.nombreDrapeau = bombes  # le nombre de drapeau est égale à celui des bombes
         drapNb.set(drapeaux)        # lignes pas ouf 
         bombeNb.set(bombes)         # pour les varriables affiché
+        print("il faut : ", (NbRow*NbColumn)-bombes)
+        print("il y a ", bombes, "bombes")
 
 
     def clicG (self, event):
