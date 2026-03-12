@@ -6,7 +6,7 @@ for i in range (NbRow):
     
 
 def rejouer ():
-    global etat_jeu
+    global etat_jeu, drapeaux
     for cel in Cellule.listeCellules:
         cel.set_type(0)
         cel.set_etat(0)
@@ -15,6 +15,9 @@ def rejouer ():
     #etat_jeu = 0
     Cellule.etat_jeu_Cel = 0
     Cellule.versLaVictoire = 0
+    Cellule.drapeaux = bombes
+
+    # drapeaux = bombes
 
     drapNb.set(0)
     bombeNb.set(0)

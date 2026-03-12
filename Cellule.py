@@ -2,7 +2,7 @@ from initCanva import *
 from random import *
 
 class Cellule :
-    global NbColumn, NbRow, bombes, drapeaux, etat_jeu
+    global NbColumn, NbRow, bombes, etat_jeu
 
     listeCellules = []
 
@@ -10,6 +10,7 @@ class Cellule :
 
     etat_jeu_Cel = 0
 
+    drapeaux = bombes
     
     def __init__(self, coA, coB, row, column):
         Cellule.listeCellules.append(self)
@@ -154,7 +155,7 @@ class Cellule :
             cel.set_type(1)                             # cellule selectionné pour être une bombe
             newListeCel.remove(cel)
 
-        drapNb.set(drapeaux)                            # lignes pas ouf 
+        drapNb.set(Cellule.drapeaux)                            # lignes pas ouf 
         bombeNb.set(bombes)                             # pour les varriables affiché
 
 
@@ -172,19 +173,19 @@ class Cellule :
 
 
     def clicD (self, event):
-        global etat_jeu, drapeaux
+        global etat_jeu
         if Cellule.etat_jeu_Cel != 2:                   # etat_jeu = 2 lorsque c'est perdu
             if self.get_etat() == 0:                    # si pas découverte
 
                 if self.get_drapeau() == 0 :            # pas de drapeau
                     self.set_drapeau(1)                 # mettre un drapeau
-                    drapeaux -= 1                       # nombre de drapeau -1
-                    drapNb.set(drapeaux)                # drapNb (Drapeau Nombre) varriable affiché
+                    Cellule.drapeaux -= 1                       # nombre de drapeau -1
+                    drapNb.set(Cellule.drapeaux)                # drapNb (Drapeau Nombre) varriable affiché
                     
                 else:                                   # retirer le drapeau
                     self.set_drapeau(0)
-                    drapeaux += 1
-                    drapNb.set(drapeaux)
+                    Cellule.drapeaux += 1
+                    drapNb.set(Cellule.drapeaux)
 
 
 # toujours en construction mais au moins ça fonctionne ! 

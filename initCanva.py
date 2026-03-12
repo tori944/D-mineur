@@ -6,7 +6,7 @@ NbColumn = 40       # nombre de ligne
 sizeCel = 20        # taille de la cellule
 
 bombes = 100        # nombre de bombe
-drapeaux = 100      # nombre de drapeau
+#drapeaux = 100      # nombre de drapeau
 
 root = Tk()
 root.title("Démineur")
