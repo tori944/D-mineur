@@ -22,14 +22,12 @@ class Cellule :
         self.coA = coA
         self.coB = coB
 
-        self.etat = 0       # 0 -> Caché / 1 -> Découverte(clic)
+        self.etat = 0       # 0 -> Caché / 1 -> Découverte(clicG)
         self.type = 0       # 0 -> Neutre / 1 -> Bombe
-        self.drapeau = 0    # 0 -> pas de Drapeau / 1 -> a un Drapeau (seulement pour un état de 0) 
+        self.drapeau = 0    # 0 -> pas de Drapeau / 1 -> a un Drapeau (seulement pour un état de 0) (clicD)
 
 
-        self.rec = canvas.create_rectangle(coA+1, coB+1, coA+sizeCel+1, coB+sizeCel+1, fill='black', outline="gray") # outline=""
-        # canvas.create_text(self.coA+10, self.coB+10, text=self.type, fill="white")
-        
+        self.rec = canvas.create_rectangle(coA+1, coB+1, coA+sizeCel+1, coB+sizeCel+1, fill='black', outline="gray")
 
         canvas.tag_bind(self.rec, "<Button-1>", self.clicG)
         canvas.tag_bind(self.rec, "<Button-3>", self.clicD)
@@ -58,8 +56,6 @@ class Cellule :
         if self.get_etat() == 1:  
             if self.get_type() == 0:                                        # pas de bombe
                 canvas.itemconfig(self.rec, fill="green", outline="")
-            # else:                                                           # une bombe
-            #     canvas.itemconfig(self.rec, fill="red", outline="")
 
     
     def set_drapeau (self, nb):  
@@ -73,7 +69,7 @@ class Cellule :
         self.type = nb
 
 
-    def voisinesID (self): # liste des id des voisines
+    def voisinesID (self): # liste des id des voisines (trouvé une meilleure manière de faire cette fonction)
 
         myId = self.get_id()
         myRow = self.get_row()
@@ -101,7 +97,7 @@ class Cellule :
         return listeVoisinesID
 
     
-    def indice_Bombe (self): # indice de bombe
+    def indice_Bombe (self):    # indice de bombe (si il y en a à coté)
         NbVoisineB = 0
 
         for j in (self.voisinesID()):
@@ -110,43 +106,32 @@ class Cellule :
                    NbVoisineB += 1
         
         return NbVoisineB
-    
-    def config_color(self):
-        canvas.itemconfig(self.rec, fill="pink")
 
-    
 
     def decouvert (self):
         global etat_jeu, NbColumn, NbRow, bombes
 
-        if self.get_etat() != 1 and self.get_drapeau() == 0:  # si l'état est different de découvert (donc caché ou caché avec indice) et sans drapeau
-            # self.etat = 1
+        if self.get_etat() != 1 and self.get_drapeau() == 0:    # si l'état est different de découvert (donc caché) et sans drapeau
+            self.set_etat(1)                                    # devient découvert
 
-            self.set_etat(1)
-
-            if self.get_type() == 0: # il n'y a pas de bombe
-                Cellule.versLaVictoire += 1
-                print("vers la victoire", Cellule.versLaVictoire)
-                if self.indice_Bombe() != 0:
-                    canvas.create_text(self.coA+10, self.coB+10, text=self.indice_Bombe(), fill="white", tags="LesIndices")
-                # self.aUnIndice = 1
-                # canvas.itemconfig(self.rec, fill="green")
+            if self.get_type() == 0:                            # il n'y a pas de bombe
+                Cellule.versLaVictoire += 1                     # compteur du nombre de cases saines découvertes 
                 
-                # dévoilé les cases qui n'ont pas de bombe autour
+                if self.indice_Bombe() != 0:                    # si il y a des voisines bombes (indice != 0)
+                    canvas.create_text(self.coA+10, self.coB+10, text=self.indice_Bombe(), fill="white", tags="LesIndices")  # indiquer l'indice sur la cellule
+                
+                # dévoilé les cases qui n'ont pas de bombe autour (indice = 0)
                 # dévoilé les incdices de bombe des cases saines     
 
-                elif self.indice_Bombe() == 0:                # si indice de bombe null -> découvrir les voisines qui n'ont pas de bombes
-                    for celID in self.voisinesID():         # on parcourt la liste des id des voisines
-                        cel = Cellule.listeCellules[celID]  # cel est l'objet cellule du tableau des cellules en fonction de son ID
-                        # cel.config_color()  <- ça fonctionne 
+                elif self.indice_Bombe() == 0:                  # si indice de bombe null -> découvrir les voisines car aucune n'a de bombe
+                    for celID in self.voisinesID():             # on parcourt la liste des id des voisines
+                        cel = Cellule.listeCellules[celID]      # cel est l'objet cellule du tableau des cellules en fonction de son ID 
                         cel.decouvert()
 
-                if Cellule.versLaVictoire == (NbRow*NbColumn)-bombes : # revoir cette valeur pr ce que je n'ai pas compris
-                    print("Vous avez gagné yhouhou !")
-                    canvas.create_text(400, 250, text="c'est gagné bg", fill="pink", font=("", 70), tags="LesIndices")
+                if Cellule.versLaVictoire == (NbRow*NbColumn)-bombes : # si on a découvert toutes les cellules saines
+                    canvas.create_text(400, 250, text="c'est gagné BG", fill="pink", font=("", 70), tags="LesIndices")
 
-            else:               # il y a une bombe
-                #etat_jeu = 2  # pour ne plus pouvoir clic
+            else:                                               # Oups, il y a une bombe
                 Cellule.etat_jeu_Cel = 2
                 canvas.create_text(400, 250, text="Perdu !", fill="pink", font=("", 70), tags="LesIndices")
                 
@@ -156,11 +141,9 @@ class Cellule :
                         canvas.itemconfig(cel.rec, fill="red", outline="gray")
             
     
-    def determine_bombe (self):
-        
-                  # boucle de nombre de bombe
+    def determine_bombe (self):                         # selectionne puis initialises les cellules qui sont bombes
 
-        newListeCel = []                # liste sans celle qui a été cliqué
+        newListeCel = []                                # liste sans celle qui a été cliqué
         
         for cell in Cellule.listeCellules:
             if cell != self:
@@ -168,38 +151,29 @@ class Cellule :
 
         for i in range (bombes):  
             cel = choice(newListeCel)
-
-            cel.set_type(1)       # cellule selectionné pour être une bombe
-            canvas.create_text(cel.coA+10, cel.coB+10, text=cel.get_type(), fill="white", tags="LesIndices")
-            # del newListeCel[cel.get_id]
+            cel.set_type(1)                             # cellule selectionné pour être une bombe
             newListeCel.remove(cel)
-            # labelType = canvas.create_text(cel.coA+10, cel.coB+10, text=cel.get_type(), fill="white", tags="LesIndices")
-        # Cellule.nombreDrapeau = bombes  # le nombre de drapeau est égale à celui des bombes
-        drapNb.set(drapeaux)        # lignes pas ouf 
-        bombeNb.set(bombes)         # pour les varriables affiché
-        print("il faut : ", (NbRow*NbColumn)-bombes)
-        print("il y a ", bombes, "bombes")
+
+        drapNb.set(drapeaux)                            # lignes pas ouf 
+        bombeNb.set(bombes)                             # pour les varriables affiché
 
 
     def clicG (self, event):
         
         global etat_jeu
-        #print("etat de jeu", Cellule.etat_jeu_Cel)
         
-        if Cellule.etat_jeu_Cel != 2:                       # etat_jeu = 2 lorsque c'est perdu
+        if Cellule.etat_jeu_Cel != 2:                   # etat_jeu = 2 lorsque c'est perdu
             
-            if Cellule.etat_jeu_Cel == 0:  
-                #print("on va ùetre les Bombes", Cellule.etat_jeu_Cel)               # le tout premier clic 
+            if Cellule.etat_jeu_Cel == 0:               # le tout premier clic 
                 self.determine_bombe()                  # placé les bombes
                 Cellule.etat_jeu_Cel = 1
-                #print("on a mis les bombes ", Cellule.etat_jeu_Cel)
-            
+                
             self.decouvert()
 
 
     def clicD (self, event):
         global etat_jeu, drapeaux
-        if Cellule.etat_jeu_Cel != 2:                               # etat_jeu = 2 lorsque c'est perdu
+        if Cellule.etat_jeu_Cel != 2:                   # etat_jeu = 2 lorsque c'est perdu
             if self.get_etat() == 0:                    # si pas découverte
 
                 if self.get_drapeau() == 0 :            # pas de drapeau
