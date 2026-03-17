@@ -143,7 +143,6 @@ class Cellule :
             
     
     def determine_bombe (self):                         # selectionne puis initialises les cellules qui sont bombes
-
         newListeCel = []                                # liste sans celle qui a été cliqué
         
         for cell in Cellule.listeCellules:
@@ -155,12 +154,11 @@ class Cellule :
             cel.set_type(1)                             # cellule selectionné pour être une bombe
             newListeCel.remove(cel)
 
-        drapNb.set(Cellule.drapeaux)                            # lignes pas ouf 
+        drapNb.set(Cellule.drapeaux)                    # lignes pas ouf 
         bombeNb.set(bombes)                             # pour les varriables affiché
 
 
     def clicG (self, event):
-        
         global etat_jeu
         
         if Cellule.etat_jeu_Cel != 2:                   # etat_jeu = 2 lorsque c'est perdu
@@ -179,8 +177,8 @@ class Cellule :
 
                 if self.get_drapeau() == 0 :            # pas de drapeau
                     self.set_drapeau(1)                 # mettre un drapeau
-                    Cellule.drapeaux -= 1                       # nombre de drapeau -1
-                    drapNb.set(Cellule.drapeaux)                # drapNb (Drapeau Nombre) varriable affiché
+                    Cellule.drapeaux -= 1               # nombre de drapeau -1
+                    drapNb.set(Cellule.drapeaux)        # drapNb (Drapeau Nombre) varriable affiché
                     
                 else:                                   # retirer le drapeau
                     self.set_drapeau(0)
